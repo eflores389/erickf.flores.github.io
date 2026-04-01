@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ERICK FLORES // CYBER SEC</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --neon-green: #00ff9f;
+    --neon-cyan: #00e5ff;
+    --neon-pink: #ff2079;
+    --dark-bg: #020c10;
+    --panel-bg: rgba(0, 255, 159, 0.03);
+    --panel-border: rgba(0, 255, 159, 0.15);
+    --text-dim: #4a7a6a;
+    --text-mid: #7abfa0;
+    --grid-color: rgba(0, 255, 159, 0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark-bg);
+    color: var(--neon-green);
+    font-family: 'Share Tech Mono', monospace;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* ── SCANLINES OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── GRID BG ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 40px;
+    background: rgba(2, 12, 16, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  .nav-logo {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 1rem;
+    color: var(--neon-green);
+    letter-spacing: 0.15em;
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--neon-pink); }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 32px;
+  }
+
+  nav ul a {
+    color: var(--text-mid);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  nav ul a:hover { color: var(--neon-green); text-shadow: 0 0 8px var(--neon-green); }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 6px 40px;
+    background: rgba(2, 12, 16, 0.9);
+    border-top: 1px solid var(--panel-border);
+    display: flex;
+    gap: 32px;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+  }
+
+  .status-bar .status-item { display: flex; gap: 8px; align-items: center; }
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--neon-green);
+    box-shadow: 0 0 6px var(--neon-green);
+    animation: blink 2s infinite;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 100px 40px 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .hero-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+
+  .hero-label span { color: var(--neon-cyan); }
+
+  .hero-name {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.8rem, 8vw, 6rem);
+    line-height: 1;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    text-shadow: 0 0 30px rgba(0, 255, 159, 0.4), 0 0 60px rgba(0, 255, 159, 0.1);
+  }
+
+  .hero-name .glitch {
+    position: relative;
+    display: inline-block;
+    animation: glitch 4s infinite;
+  }
+
+  .hero-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(1rem, 3vw, 1.6rem);
+    font-weight: 300;
+    color: var(--neon-cyan);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .hero-bio {
+    max-width: 560px;
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: var(--text-mid);
+    margin-bottom: 40px;
+    border-left: 2px solid var(--neon-green);
+    padding-left: 20px;
+  }
+
+  .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+
+  .btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 12px 28px;
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+    background: transparent;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--neon-green);
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    z-index: -1;
+  }
+
+  .btn:hover { color: var(--dark-bg); box-shadow: 0 0 20px rgba(0,255,159,0.4); }
+  .btn:hover::before { transform: translateX(0); }
+
+  .btn-outline { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+  .btn-outline::before { background: var(--neon-cyan); }
+
+  /* ── SECTION COMMON ── */
+  section {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 80px 40px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .section-num {
+    font-size: 0.65rem;
+    color: var(--neon-pink);
+    letter-spacing: 0.2em;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--panel-border), transparent);
+  }
+
+  /* ── SKILLS ── */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .skill-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    padding: 24px;
+    position: relative;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+  }
+
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--neon-green);
+    box-shadow: 0 0 10px var(--neon-green);
+  }
+
+  .skill-card:hover {
+    border-color: rgba(0, 255, 159, 0.4);
+    box-shadow: 0 0 20px rgba(0, 255, 159, 0.08);
+  }
+
+  .skill-card h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--neon-green);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .skill-card h3 .icon { color: var(--neon-pink); font-size: 1rem; }
+
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .tag {
+    font-size: 0.65rem;
+    padding: 4px 10px;
+    border: 1px solid rgba(0, 229, 255, 0.25);
+    color: var(--neon-cyan);
+    letter-spacing: 0.08em;
+    transition: all 0.2s;
+  }
+
+  .tag:hover {
+    border-color: var(--neon-cyan);
+    background: rgba(0, 229, 255, 0.1);
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+  }
+
+  /* ── EXPERIENCE ── */
+  .timeline { position: relative; padding-left: 24px; }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, var(--neon-green), var(--panel-border) 80%, transparent);
+  }
+
+  .exp-item {
+    position: relative;
+    margin-bottom: 48px;
+    padding: 24px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    transition: border-color 0.3s;
+  }
+
+  .exp-item::before {
+    content: '▸';
+    position: absolute;
+    left: -36px;
+    top: 26px;
+    color: var(--neon-green);
+    font-size: 0.8rem;
+  }
+
+  .exp-item:hover { border-color: rgba(0, 255, 159, 0.3); }
+
+  .exp-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+
+  .exp-role {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--neon-green);
+  }
+
+  .exp-date {
+    font-size: 0.65rem;
+    color: var(--neon-pink);
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+
+  .exp-company {
+    font-size: 0.75rem;
+    color: var(--neon-cyan);
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+
+  .exp-bullets { list-style: none; }
+
+  .exp-bullets li {
+    font-size: 0.78rem;
+    color: var(--text-mid);
+    line-height: 1.75;
+    padding-left: 18px;
+    position: relative;
+    margin-bottom: 6px;
+  }
+
+  .exp-bullets li::before {
+    content: '>';
+    position: absolute;
+    left: 0;
+    color: var(--neon-green);
+  }
+
+  /* ── PROJECTS ── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .project-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    padding: 28px;
+    position: relative;
+    transition: all 0.3s;
+    overflow: hidden;
+  }
+
+  .project-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 0 28px 28px 0;
+    border-color: transparent var(--neon-green) transparent transparent;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+  }
+
+  .project-card:hover {
+    border-color: rgba(0, 255, 159, 0.5);
+    box-shadow: 0 0 30px rgba(0, 255, 159, 0.08);
+    transform: translateY(-4px);
+  }
+
+  .project-card:hover::after { opacity: 0.8; }
+
+  .project-num {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    margin-bottom: 12px;
+  }
+
+  .project-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--neon-green);
+    margin-bottom: 12px;
+    letter-spacing: 0.08em;
+  }
+
+  .project-desc {
+    font-size: 0.78rem;
+    color: var(--text-mid);
+    line-height: 1.75;
+    margin-bottom: 20px;
+  }
+
+  .project-stack { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .stack-tag {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    border: 1px solid rgba(255, 32, 121, 0.3);
+    color: var(--neon-pink);
+    letter-spacing: 0.08em;
+  }
+
+  .add-project-btn {
+    border: 1px dashed rgba(0, 255, 159, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 180px;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .add-project-btn:hover {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+    background: rgba(0, 255, 159, 0.03);
+  }
+
+  /* ── EDUCATION ── */
+  .edu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .edu-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    padding: 24px;
+    position: relative;
+    transition: border-color 0.3s;
+  }
+
+  .edu-card:hover { border-color: rgba(0, 229, 255, 0.3); }
+
+  .edu-degree {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+
+  .edu-school {
+    font-size: 0.72rem;
+    color: var(--text-mid);
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .edu-year {
+    font-size: 0.65rem;
+    color: var(--neon-pink);
+    letter-spacing: 0.15em;
+  }
+
+  /* ── CONTACT ── */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 600px) { .contact-grid { grid-template-columns: 1fr; } }
+
+  .contact-item {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+    transition: all 0.3s;
+    color: inherit;
+  }
+
+  .contact-item:hover {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 16px rgba(0, 255, 159, 0.1);
+  }
+
+  .contact-icon { font-size: 1.2rem; }
+  .contact-label { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 0.15em; margin-bottom: 4px; }
+  .contact-value { font-size: 0.8rem; color: var(--neon-green); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  @keyframes glitch {
+    0%, 90%, 100% { transform: none; text-shadow: 0 0 30px rgba(0,255,159,0.4); }
+    91% { transform: skewX(-2deg) translateX(3px); text-shadow: -3px 0 var(--neon-pink), 3px 0 var(--neon-cyan); }
+    93% { transform: skewX(1deg) translateX(-2px); text-shadow: 3px 0 var(--neon-pink), -3px 0 var(--neon-cyan); }
+    95% { transform: none; }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-label  { animation: fadeInUp 0.6s ease 0.1s both; }
+  .hero-name   { animation: fadeInUp 0.6s ease 0.25s both; }
+  .hero-title  { animation: fadeInUp 0.6s ease 0.4s both; }
+  .hero-bio    { animation: fadeInUp 0.6s ease 0.55s both; }
+  .hero-ctas   { animation: fadeInUp 0.6s ease 0.7s both; }
+
+  /* ── TERMINAL CURSOR ── */
+  .cursor {
+    display: inline-block;
+    width: 10px; height: 1.1em;
+    background: var(--neon-green);
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 14px 20px; }
+    nav ul { gap: 20px; }
+    section { padding: 60px 20px; }
+    #hero { padding: 100px 20px 60px; }
+    .status-bar { padding: 6px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero">ERICK<span>.</span>FLORES</a>
+  <ul>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">XP</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <p class="hero-label">// SYSTEM INITIALIZED &nbsp;<span>[ STATUS: ONLINE ]</span></p>
+  <h1 class="hero-name"><span class="glitch">ERICK FLORES</span></h1>
+  <p class="hero-title">Cybersecurity Engineer &amp; IT Specialist</p>
+  <p class="hero-bio">
+    MSIT Cybersecurity candidate at UTSA with hands-on experience in endpoint security,
+    Active Directory administration, incident response, and PowerShell automation.
+    Defending systems, hunting threats, and building tools that make the digital world a little less vulnerable.<span class="cursor"></span>
+  </p>
+  <div class="hero-ctas">
+    <a href="#projects" class="btn">View Projects</a>
+    <a href="#contact" class="btn btn-outline">Get In Touch</a>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Arsenal</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="skills-grid">
+    <div class="skill-card">
+      <h3><span class="icon">⚡</span>Scripting</h3>
+      <div class="skill-tags">
+        <span class="tag">PowerShell</span>
+        <span class="tag">Bash</span>
+        <span class="tag">Java</span>
+      </div>
+    </div>
+
+    <div class="skill-card" style="--neon-green: #00e5ff;">
+      <h3><span class="icon">🛡</span>Security &amp; Monitoring</h3>
+      <div class="skill-tags">
+        <span class="tag">Splunk</span>
+        <span class="tag">Wireshark</span>
+        <span class="tag">Carbon Black</span>
+        <span class="tag">Malwarebytes</span>
+        <span class="tag">pfSense</span>
+      </div>
+    </div>
+
+    <div class="skill-card" style="--neon-green: #ff2079; --panel-border: rgba(255,32,121,0.15);">
+      <h3><span class="icon">🏢</span>Enterprise Platforms</h3>
+      <div class="skill-tags">
+        <span class="tag">NIST</span>
+        <span class="tag">MITRE ATT&amp;CK</span>
+        <span class="tag">HIPAA</span>
+        <span class="tag">Active Directory</span>
+        <span class="tag">Microsoft 365</span>
+        <span class="tag">VMware</span>
+        <span class="tag">ServiceNow</span>
+        <span class="tag">JAMF</span>
+        <span class="tag">SCCM</span>
+        <span class="tag">Jira</span>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <h3><span class="icon">💻</span>Operating Systems</h3>
+      <div class="skill-tags">
+        <span class="tag">Windows 7–11</span>
+        <span class="tag">Kali Linux</span>
+        <span class="tag">macOS</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Field Operations</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="timeline">
+    <div class="exp-item">
+      <div class="exp-header">
+        <span class="exp-role">IT Support Engineer</span>
+        <span class="exp-date">MAY 2025 – CURRENT</span>
+      </div>
+      <p class="exp-company">▸ Revivent IT Solutions // San Antonio, TX // Part-time</p>
+      <ul class="exp-bullets">
+        <li>Developed PowerShell automation scripts for SharePoint administration, cutting manual overhead while enforcing M365 compliance.</li>
+        <li>Tested PnP scripts against Microsoft Admin Center and Entra ID security policies.</li>
+        <li>Authored SOP documentation and tracked resolutions in Confluence to standardize team troubleshooting.</li>
+        <li>Monitored endpoints for malware detections, configuration drift, and policy violations.</li>
+      </ul>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-header">
+        <span class="exp-role">IT Specialist – Desktop Support</span>
+        <span class="exp-date">NOV 2024 – JUL 2025</span>
+      </div>
+      <p class="exp-company">▸ UT Health San Antonio // San Antonio, TX</p>
+      <ul class="exp-bullets">
+        <li>Supported enterprise hardware replacements and software deployments to maintain operational stability.</li>
+        <li>Managed service requests in ticketing systems with meticulous documentation per IT best practices.</li>
+        <li>Collaborated with SOC analysts to investigate compromised accounts and neutralize malware using Malwarebytes.</li>
+      </ul>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-header">
+        <span class="exp-role">Technical Support Specialist I</span>
+        <span class="exp-date">SEP 2022 – OCT 2024</span>
+      </div>
+      <p class="exp-company">▸ UTSA University Technology Solutions // San Antonio, TX</p>
+      <ul class="exp-bullets">
+        <li>Led Active Directory administration — permission management, security groups, and OU restructuring.</li>
+        <li>Leveraged Apple School Manager for UTSA endpoint management and security compliance.</li>
+        <li>Partnered with SOC to remediate compromised accounts and remove malicious software.</li>
+        <li>Used Splunk and custom PowerShell scripts to diagnose authentication failures and restore access.</li>
+        <li>Acted as supervisor for a 10-person IT help desk team, specializing in escalation and resolution.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Projects</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="projects-grid">
+    <!-- Placeholder project 1 -->
+    <div class="project-card">
+      <p class="project-num">// PROJECT_001</p>
+      <h3 class="project-title">PowerShell SharePoint Automation</h3>
+      <p class="project-desc">Automated SharePoint administration tasks using PnP PowerShell scripts, reducing manual management overhead and enforcing compliance with Microsoft 365 admin policies.</p>
+      <div class="project-stack">
+        <span class="stack-tag">PowerShell</span>
+        <span class="stack-tag">SharePoint</span>
+        <span class="stack-tag">Microsoft 365</span>
+        <span class="stack-tag">Entra ID</span>
+      </div>
+    </div>
+
+    <!-- Placeholder project 2 -->
+    <div class="project-card">
+      <p class="project-num">// PROJECT_002</p>
+      <h3 class="project-title">Splunk Auth Anomaly Detection</h3>
+      <p class="project-desc">Built custom Splunk queries and PowerShell scripts to identify authentication anomalies and account lockouts, streamlining incident response workflows for a university IT team.</p>
+      <div class="project-stack">
+        <span class="stack-tag">Splunk</span>
+        <span class="stack-tag">PowerShell</span>
+        <span class="stack-tag">Active Directory</span>
+        <span class="stack-tag">SIEM</span>
+      </div>
+    </div>
+
+    <!-- Add more placeholder -->
+    <div class="project-card add-project-btn">
+      <span>+</span>
+      <span>// ADD_PROJECT</span>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Training Log</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="edu-grid">
+    <div class="edu-card">
+      <p class="edu-degree">MSIT – Cybersecurity</p>
+      <p class="edu-school">The University of Texas San Antonio</p>
+      <p class="edu-year">// EXP: JUNE 2027</p>
+    </div>
+    <div class="edu-card">
+      <p class="edu-degree">BBA – Cybersecurity</p>
+      <p class="edu-school">The University of Texas San Antonio</p>
+      <p class="edu-year">// COMPLETED: DEC 2023</p>
+    </div>
+    <div class="edu-card">
+      <p class="edu-degree">AAS – Computer Science</p>
+      <p class="edu-school">Northwest Vista College</p>
+      <p class="edu-year">// COMPLETED: MAY 2017</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Open Channel</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="contact-grid">
+    <a class="contact-item" href="mailto:erick.flores@my.utsa.edu">
+      <span class="contact-icon">✉</span>
+      <div>
+        <p class="contact-label">// EMAIL</p>
+        <p class="contact-value">erick.flores@my.utsa.edu</p>
+      </div>
+    </a>
+    <a class="contact-item" href="https://www.linkedin.com/in/erick-f-877b521aa" target="_blank">
+      <span class="contact-icon">🔗</span>
+      <div>
+        <p class="contact-label">// LINKEDIN</p>
+        <p class="contact-value">linkedin.com/in/erick-f-877b521aa</p>
+      </div>
+    </a>
+    <div class="contact-item">
+      <span class="contact-icon">📍</span>
+      <div>
+        <p class="contact-label">// LOCATION</p>
+        <p class="contact-value">San Antonio, TX</p>
+      </div>
+    </div>
+    <a class="contact-item" href="tel:2103961758">
+      <span class="contact-icon">📞</span>
+      <div>
+        <p class="contact-label">// PHONE</p>
+        <p class="contact-value">210-396-1758</p>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-item"><span class="status-dot"></span>SYSTEM ONLINE</div>
+  <div class="status-item">LOC: SAN ANTONIO, TX</div>
+  <div class="status-item">CLEARANCE: UTSA MSIT</div>
+  <div class="status-item">BUILD: v1.0.0</div>
+</div>
+
+<script>
+  // Glitch effect on hover for section titles
+  document.querySelectorAll('.section-title').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      el.style.textShadow = '-2px 0 #ff2079, 2px 0 #00e5ff';
+      setTimeout(() => el.style.textShadow = '', 300);
+    });
+  });
+
+  // Typing effect for hero bio
+  const bio = document.querySelector('.hero-bio');
+  const originalHTML = bio.innerHTML;
+  bio.style.opacity = '1';
+
+  // Smooth reveal on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.skill-card, .exp-item, .project-card, .edu-card, .contact-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease, border-color 0.3s, box-shadow 0.3s';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
